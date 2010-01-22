@@ -1,6 +1,6 @@
 var sys        = require("sys"),
 	http       = require("http"),
-	middleware = require("../lib/middleware");
+	stack = require("../lib/stack");
 	
 var md = function(app, request) {
 	// Do something with request
@@ -8,7 +8,7 @@ var md = function(app, request) {
 	
 	// Request app (runs stack) 
 	// Pass request and callback function with response param
-	// response will be {statusCode: 200, headers: {}, body: ""}
+	// response will be [statusCode: 200, headers: {}, body: ""}
 	app.request(request, function(response) {
 		// Do something with response
 		response.body += "<!-- MIDDLEWARED -->";
@@ -29,7 +29,7 @@ var mdEndpoint = function(app, request) {
 	})
 }
 
-var mdStack = new middleware.Stack();
+var mdStack = new stack.Stack();
 
 mdStack.add(md);
 mdStack.setEndpoint(mdEndpoint);
