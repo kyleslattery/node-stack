@@ -1,5 +1,5 @@
-var sys        = require("sys"),
-	http       = require("http"),
+var sys   = require("sys"),
+	http  = require("http"),
 	stack = require("../lib/stack");
 	
 var md = function(app, request) {
