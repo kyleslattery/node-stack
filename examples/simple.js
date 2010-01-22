@@ -12,11 +12,17 @@ var md = function(app, request) {
 	app.request(request, function(response) {
 		// Do something with response
 		response.body += "<!-- MIDDLEWARED -->";
-		response.headers["Content-Length"] = response.body.length;
 		
 		app.respond(response);
 	});
 };
+
+var md2 = function(app, request) {
+	app.request(request, function(response) {
+		response.body += "<!-- MD2 -->";
+		app.respond(response);
+	})
+}
 
 var mdEndpoint = function(app, request) {
 	// This is the final part of the stack, all it does is return a response,
@@ -32,6 +38,8 @@ var mdEndpoint = function(app, request) {
 var mdStack = new stack.Stack();
 
 mdStack.add(md);
+mdStack.add(md2);
+
 mdStack.setEndpoint(mdEndpoint);
 
 http.createServer(mdStack.run).listen(8000);
