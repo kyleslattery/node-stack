@@ -25,7 +25,7 @@ var mdEndpoint = function(app, request) {
 	app.respond({
 		statusCode: 200,
 		headers: {},
-		body: "Awesome!";
+		body: "Awesome!"
 	})
 }
 
