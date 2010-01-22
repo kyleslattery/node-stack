@@ -2,27 +2,36 @@ var sys        = require("sys"),
 	http       = require("http"),
 	middleware = require("../lib/middleware");
 	
-var md = new middleware.Middleware();
-
-md.addCallback("request", function(request) {
+var md = function(app, request) {
 	// Do something with request
 	request.headers["X-Middlewared"] = 'true';
 	
-	// Must return request object
-	return request;
-});
+	// Request app (runs stack) 
+	// Pass request and callback function with response param
+	// response will be {statusCode: 200, headers: {}, body: ""}
+	app.request(request, function(response) {
+		// Do something with response
+		response.body += "<!-- MIDDLEWARED -->";
+		response.headers["Content-Length"] = response.body.length;
+		
+		app.respond(response);
+	});
+};
 
-md.addCallback("response", function(response) {
-	// Do something with response
-	response.body += "<!-- MIDDLEWARED! -->";
-	response.headers["Content-Length"] = response.body.length;
+var mdEndpoint = function(app, request) {
+	// This is the final part of the stack, all it does is return a response,
+	// it is unable to run another request.
 	
-	// Must return response object
-	return response;
-});
-	
-middleware.add(md);
+	app.respond({
+		statusCode: 200,
+		headers: {},
+		body: "Awesome!";
+	})
+}
 
-http.createServer(function(request, response) {
-	
-}).listen(8000);
+var mdStack = new middleware.Stack();
+
+mdStack.add(md);
+mdStack.setEndpoint(mdEndpoint);
+
+http.createServer(mdStack.run).listen(8000);
