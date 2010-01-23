@@ -2,26 +2,30 @@ var sys   = require("sys"),
 	http  = require("http"),
 	stack = require("../lib/stack");
 	
-var md = function(app, request) {
-	// Do something with request
-	request.headers["X-Middlewared"] = 'true';
+var md = function(stack) {
+	var test = "outside";
 	
-	// Request app (runs stack) 
-	// Pass request and callback function with response param
-	// response will be [statusCode: 200, headers: {}, body: ""}
-	app.request(request, function(response) {
-		// Do something with response
-		response.body += "<!-- MIDDLEWARED -->";
+	stack.addRequestCallback(function(app, request) {
+		// Do something with request
+		request.headers["X-Middlewared"] = 'true';
+		test = "inside";
 		
+		app.request(request);
+	})
+	
+	stack.addResponseCallback(function(app, response) {
+		// response will be [statusCode: 200, headers: {}, body: ""}
+		// Do something with response
+		response.body += "<!-- " + test + " -->";
 		app.respond(response);
 	});
 };
 
-var md2 = function(app, request) {
-	app.request(request, function(response) {
+var md2 = function(stack) {
+	stack.addResponseCallback(function(app, response) {
 		response.body += "<!-- MD2 -->";
 		app.respond(response);
-	})
+	});
 }
 
 var mdEndpoint = function(app, request) {
